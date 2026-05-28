@@ -1,0 +1,1251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Samachar Quiz · Daily Current Affairs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sage: #7c9e8a;
+    --sage-light: #a8c4b4;
+    --sage-pale: #e8f0eb;
+    --sage-dark: #4a6b57;
+    --cream: #faf7f2;
+    --cream-warm: #f4ede0;
+    --stone: #c4b89a;
+    --stone-light: #ede5d4;
+    --dust: #8a7f6e;
+    --dust-light: #b5a990;
+    --sky: #8ba8be;
+    --sky-pale: #dde8f0;
+    --blush: #c4957a;
+    --blush-pale: #f0dfd4;
+    --ink: #2c2a25;
+    --ink-muted: #5a564e;
+    --ink-faint: #9a9188;
+    --white: #ffffff;
+    --correct: #5a8a6a;
+    --correct-bg: #e4f0e8;
+    --wrong: #9a5a4a;
+    --wrong-bg: #f0e4e0;
+    --radius: 16px;
+    --radius-sm: 8px;
+    --transition: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Ambient background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 50% at 10% 20%, rgba(124,158,138,0.12) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 60% at 90% 80%, rgba(139,168,190,0.10) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 40% at 50% 50%, rgba(196,185,154,0.06) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ─── NAV ─── */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(250,247,242,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(196,185,154,0.25);
+    padding: 0 2rem;
+    height: 60px;
+    display: flex; align-items: center; justify-content: space-between;
+    animation: slideDown 0.5s ease both;
+  }
+  @keyframes slideDown { from { transform: translateY(-100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+  .nav-logo {
+    font-family: 'DM Serif Display', serif;
+    font-size: 20px;
+    color: var(--ink);
+    letter-spacing: -0.3px;
+  }
+  .nav-logo span { color: var(--sage); font-style: italic; }
+
+  .nav-actions { display: flex; gap: 8px; align-items: center; }
+
+  .nav-btn {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 400;
+    padding: 6px 14px;
+    border-radius: 20px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: var(--transition);
+  }
+  .nav-btn.ghost {
+    background: transparent;
+    border-color: rgba(196,185,154,0.4);
+    color: var(--ink-muted);
+  }
+  .nav-btn.ghost:hover { background: var(--stone-light); border-color: var(--stone); }
+  .nav-btn.primary {
+    background: var(--sage);
+    color: var(--white);
+  }
+  .nav-btn.primary:hover { background: var(--sage-dark); }
+
+  /* ─── MAIN LAYOUT ─── */
+  main {
+    position: relative; z-index: 1;
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0 1.5rem 4rem;
+  }
+
+  /* ─── SCREENS ─── */
+  .screen { display: none; }
+  .screen.active {
+    display: block;
+    animation: fadeUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) both;
+  }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* ─── HERO ─── */
+  .hero {
+    text-align: center;
+    padding: 4rem 0 2.5rem;
+  }
+  .hero-eyebrow {
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--sage);
+    font-weight: 500;
+    margin-bottom: 1rem;
+    animation: fadeUp 0.5s 0.1s both;
+  }
+  .hero h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(36px, 7vw, 56px);
+    line-height: 1.1;
+    color: var(--ink);
+    margin-bottom: 1rem;
+    animation: fadeUp 0.5s 0.2s both;
+  }
+  .hero h1 em { color: var(--sage); font-style: italic; }
+  .hero p {
+    font-size: 16px;
+    color: var(--ink-muted);
+    max-width: 400px;
+    margin: 0 auto 2rem;
+    line-height: 1.7;
+    font-weight: 300;
+    animation: fadeUp 0.5s 0.3s both;
+  }
+
+  .hero-stats {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-bottom: 2.5rem;
+    animation: fadeUp 0.5s 0.4s both;
+  }
+  .hero-stat { text-align: center; }
+  .hero-stat-num {
+    font-family: 'DM Serif Display', serif;
+    font-size: 28px;
+    color: var(--ink);
+    display: block;
+  }
+  .hero-stat-label {
+    font-size: 12px;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  /* ─── CARDS ─── */
+  .card {
+    background: var(--white);
+    border-radius: var(--radius);
+    border: 1px solid rgba(196,185,154,0.2);
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    transition: var(--transition);
+  }
+  .card:hover { border-color: rgba(124,158,138,0.3); }
+
+  /* ─── START SCREEN ─── */
+  .start-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 1.5rem;
+  }
+  .start-tile {
+    background: var(--cream-warm);
+    border-radius: var(--radius-sm);
+    padding: 1rem;
+    border: 1px solid rgba(196,185,154,0.2);
+    animation: fadeUp 0.5s both;
+  }
+  .start-tile:nth-child(1) { animation-delay: 0.5s; }
+  .start-tile:nth-child(2) { animation-delay: 0.6s; }
+  .start-tile:nth-child(3) { animation-delay: 0.7s; }
+  .start-tile:nth-child(4) { animation-delay: 0.8s; }
+  .start-tile-icon { font-size: 20px; margin-bottom: 6px; }
+  .start-tile-label { font-size: 13px; font-weight: 500; color: var(--ink-muted); }
+  .start-tile-val { font-size: 15px; font-weight: 500; color: var(--ink); }
+
+  .name-input-wrap { margin-bottom: 1.25rem; animation: fadeUp 0.5s 0.9s both; }
+  .name-input-wrap label { display: block; font-size: 13px; color: var(--ink-muted); margin-bottom: 6px; }
+  .name-input {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid rgba(196,185,154,0.4);
+    border-radius: var(--radius-sm);
+    background: var(--cream);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .name-input:focus { border-color: var(--sage); }
+
+  /* ─── BIG BUTTON ─── */
+  .btn-big {
+    width: 100%;
+    padding: 14px 24px;
+    border: none;
+    border-radius: 40px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+  }
+  .btn-big::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(255,255,255,0);
+    transition: background 0.2s;
+  }
+  .btn-big:hover::after { background: rgba(255,255,255,0.1); }
+  .btn-big:active { transform: scale(0.98); }
+  .btn-big.sage { background: var(--sage); color: var(--white); }
+  .btn-big.sage:hover { background: var(--sage-dark); }
+  .btn-big.outline {
+    background: transparent;
+    border: 1px solid rgba(196,185,154,0.5);
+    color: var(--ink-muted);
+  }
+  .btn-big.outline:hover { background: var(--stone-light); }
+  .btn-big:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+  /* ─── LOADING ─── */
+  #loading-screen {
+    min-height: 60vh;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  #loading-screen.active { display: flex; }
+
+  .loader-ring {
+    width: 56px; height: 56px;
+    border: 2px solid var(--stone-light);
+    border-top-color: var(--sage);
+    border-radius: 50%;
+    animation: spin 0.9s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loader-text {
+    font-size: 15px;
+    color: var(--ink-muted);
+    font-weight: 300;
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100% { opacity: 0.5; } 50% { opacity: 1; } }
+
+  /* ─── QUIZ SCREEN ─── */
+  .quiz-header {
+    padding: 1.5rem 0 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .progress-dots {
+    display: flex; gap: 6px;
+  }
+  .pdot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--stone-light);
+    transition: background 0.3s ease, transform 0.3s ease;
+  }
+  .pdot.done { background: var(--sage); }
+  .pdot.active { background: var(--sage-dark); transform: scale(1.3); }
+
+  /* Timer */
+  .timer-wrap {
+    display: flex; align-items: center; gap: 8px;
+  }
+  .timer-circle {
+    width: 44px; height: 44px;
+    position: relative;
+    flex-shrink: 0;
+  }
+  .timer-circle svg { transform: rotate(-90deg); }
+  .timer-track { fill: none; stroke: var(--stone-light); stroke-width: 3; }
+  .timer-fill { fill: none; stroke: var(--sage); stroke-width: 3; stroke-linecap: round; transition: stroke-dashoffset 1s linear, stroke 0.3s; }
+  .timer-num {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 500; color: var(--ink-muted);
+  }
+  .timer-urgent .timer-fill { stroke: var(--blush); }
+  .timer-urgent .timer-num { color: var(--blush); }
+
+  .score-badge {
+    font-size: 13px; font-weight: 500;
+    background: var(--sage-pale);
+    color: var(--sage-dark);
+    padding: 4px 10px;
+    border-radius: 20px;
+  }
+
+  /* Question card */
+  .question-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    border: 1px solid rgba(196,185,154,0.2);
+    padding: 1.75rem;
+    margin-bottom: 1rem;
+    animation: fadeUp 0.4s cubic-bezier(0.4,0,0.2,1) both;
+  }
+
+  .q-source {
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--sage);
+    margin-bottom: 0.75rem;
+    font-weight: 500;
+  }
+  .q-text {
+    font-size: 17px;
+    font-weight: 400;
+    line-height: 1.65;
+    color: var(--ink);
+    margin-bottom: 1.25rem;
+  }
+
+  /* Options */
+  .options { display: flex; flex-direction: column; gap: 8px; }
+  .opt-btn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 13px 16px;
+    background: var(--cream);
+    border: 1px solid rgba(196,185,154,0.25);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: var(--ink);
+    text-align: left;
+    transition: background 0.2s, border-color 0.2s, transform 0.15s;
+  }
+  .opt-btn:hover:not(:disabled) {
+    background: var(--sage-pale);
+    border-color: var(--sage-light);
+    transform: translateX(3px);
+  }
+  .opt-btn:disabled { cursor: default; }
+  .opt-btn.correct {
+    background: var(--correct-bg);
+    border-color: var(--correct);
+    color: var(--correct);
+    animation: correctPop 0.4s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  @keyframes correctPop { 0% { transform: scale(0.97); } 60% { transform: scale(1.02); } 100% { transform: scale(1); } }
+  .opt-btn.wrong {
+    background: var(--wrong-bg);
+    border-color: var(--wrong);
+    color: var(--wrong);
+    animation: shake 0.4s ease;
+  }
+  @keyframes shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+
+  .opt-letter {
+    width: 24px; height: 24px; flex-shrink: 0;
+    border-radius: 50%;
+    background: var(--stone-light);
+    color: var(--dust);
+    font-size: 11px;
+    font-weight: 500;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s, color 0.2s;
+  }
+  .opt-btn.correct .opt-letter { background: var(--correct); color: var(--white); }
+  .opt-btn.wrong .opt-letter { background: var(--wrong); color: var(--white); }
+
+  /* Explanation */
+  .explanation {
+    margin-top: 1rem;
+    padding: 1rem 1.25rem;
+    background: var(--sage-pale);
+    border-radius: var(--radius-sm);
+    border-left: 3px solid var(--sage);
+    font-size: 14px;
+    color: var(--sage-dark);
+    line-height: 1.65;
+    animation: fadeUp 0.3s ease both;
+  }
+
+  /* Next btn */
+  .next-wrap {
+    margin-top: 1rem;
+    animation: fadeUp 0.3s 0.1s both;
+  }
+
+  /* ─── RESULT SCREEN ─── */
+  .result-hero {
+    text-align: center;
+    padding: 3rem 0 2rem;
+  }
+  .result-score-ring {
+    width: 120px; height: 120px;
+    margin: 0 auto 1.25rem;
+    position: relative;
+  }
+  .result-score-ring svg { transform: rotate(-90deg); }
+  .ring-track { fill: none; stroke: var(--stone-light); stroke-width: 6; }
+  .ring-fill { fill: none; stroke: var(--sage); stroke-width: 6; stroke-linecap: round; transition: stroke-dashoffset 1.2s cubic-bezier(0.4,0,0.2,1); }
+  .ring-num {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column;
+  }
+  .ring-num span:first-child {
+    font-family: 'DM Serif Display', serif;
+    font-size: 32px;
+    color: var(--ink);
+    line-height: 1;
+  }
+  .ring-num span:last-child { font-size: 12px; color: var(--ink-faint); }
+  .result-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 28px; color: var(--ink); margin-bottom: 6px;
+  }
+  .result-sub { font-size: 15px; color: var(--ink-muted); font-weight: 300; margin-bottom: 2rem; }
+
+  .result-stats {
+    display: grid; grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px; margin-bottom: 1.5rem;
+  }
+  .result-stat {
+    background: var(--white);
+    border: 1px solid rgba(196,185,154,0.2);
+    border-radius: var(--radius-sm);
+    padding: 1rem;
+    text-align: center;
+  }
+  .result-stat-val {
+    font-family: 'DM Serif Display', serif;
+    font-size: 24px; color: var(--ink); display: block;
+  }
+  .result-stat-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--ink-faint); }
+
+  /* Review list */
+  .review-list { margin-bottom: 1.5rem; }
+  .review-item {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(196,185,154,0.15);
+  }
+  .review-icon {
+    width: 20px; height: 20px; border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; margin-top: 2px;
+  }
+  .review-icon.right { background: var(--correct-bg); color: var(--correct); }
+  .review-icon.wrong { background: var(--wrong-bg); color: var(--wrong); }
+  .review-q { font-size: 14px; color: var(--ink); line-height: 1.5; }
+  .review-ans { font-size: 12px; margin-top: 2px; }
+  .review-ans.right { color: var(--correct); }
+  .review-ans.wrong { color: var(--wrong); }
+
+  .result-btns { display: flex; flex-direction: column; gap: 8px; }
+
+  /* ─── LEADERBOARD ─── */
+  #leaderboard-screen { padding-bottom: 2rem; }
+  .lb-header { padding: 2rem 0 1.5rem; }
+  .lb-header h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 30px; color: var(--ink); margin-bottom: 4px;
+  }
+  .lb-header p { font-size: 14px; color: var(--ink-muted); font-weight: 300; }
+
+  .lb-tabs {
+    display: flex; gap: 4px;
+    background: var(--stone-light);
+    border-radius: 20px;
+    padding: 3px;
+    margin-bottom: 1.5rem;
+    width: fit-content;
+  }
+  .lb-tab {
+    padding: 6px 16px; border-radius: 16px;
+    font-size: 13px; cursor: pointer;
+    border: none; background: transparent; color: var(--ink-muted);
+    font-family: 'DM Sans', sans-serif;
+    transition: background 0.2s, color 0.2s;
+  }
+  .lb-tab.active { background: var(--white); color: var(--ink); font-weight: 500; }
+
+  .lb-list { display: flex; flex-direction: column; gap: 8px; }
+  .lb-row {
+    display: flex; align-items: center; gap: 12px;
+    background: var(--white);
+    border: 1px solid rgba(196,185,154,0.2);
+    border-radius: var(--radius-sm);
+    padding: 12px 16px;
+    transition: var(--transition);
+    animation: fadeUp 0.4s both;
+  }
+  .lb-row:hover { border-color: rgba(124,158,138,0.3); }
+  .lb-row.me { border-color: var(--sage-light); background: var(--sage-pale); }
+  .lb-rank {
+    font-family: 'DM Serif Display', serif;
+    font-size: 18px; color: var(--ink-faint);
+    width: 28px; text-align: center; flex-shrink: 0;
+  }
+  .lb-rank.gold { color: #c9a227; }
+  .lb-rank.silver { color: #9aa0a6; }
+  .lb-rank.bronze { color: #a0522d; }
+  .lb-avatar {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: var(--sage-pale);
+    color: var(--sage-dark);
+    font-size: 13px; font-weight: 500;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .lb-info { flex: 1; }
+  .lb-name { font-size: 14px; font-weight: 500; color: var(--ink); }
+  .lb-meta { font-size: 12px; color: var(--ink-faint); }
+  .lb-score-col { text-align: right; flex-shrink: 0; }
+  .lb-pts { font-family: 'DM Serif Display', serif; font-size: 20px; color: var(--ink); }
+  .lb-streak { font-size: 11px; color: var(--sage); margin-top: 2px; }
+
+  .lb-empty {
+    text-align: center; padding: 3rem 0;
+    color: var(--ink-faint); font-size: 15px; font-weight: 300;
+  }
+
+  /* ─── PROFILE SCREEN ─── */
+  #profile-screen { padding: 2rem 0; }
+  .profile-hero { text-align: center; margin-bottom: 2rem; }
+  .profile-avatar {
+    width: 80px; height: 80px; border-radius: 50%;
+    background: var(--sage-pale);
+    color: var(--sage-dark);
+    font-family: 'DM Serif Display', serif;
+    font-size: 28px;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 1rem;
+    border: 2px solid var(--sage-light);
+  }
+  .profile-name { font-family: 'DM Serif Display', serif; font-size: 26px; color: var(--ink); }
+  .profile-since { font-size: 13px; color: var(--ink-faint); margin-top: 4px; }
+
+  .profile-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 1.5rem; }
+  .profile-stat {
+    background: var(--white); border: 1px solid rgba(196,185,154,0.2);
+    border-radius: var(--radius-sm); padding: 1.25rem; text-align: center;
+  }
+  .profile-stat-val { font-family: 'DM Serif Display', serif; font-size: 30px; color: var(--ink); display: block; }
+  .profile-stat-label { font-size: 12px; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 1px; margin-top: 2px; }
+
+  .history-section h3 { font-size: 14px; font-weight: 500; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+  .history-bar-wrap { display: flex; flex-direction: column; gap: 6px; }
+  .history-bar-row { display: flex; align-items: center; gap: 10px; }
+  .history-bar-label { font-size: 12px; color: var(--ink-faint); width: 70px; flex-shrink: 0; }
+  .history-bar-track { flex: 1; height: 8px; background: var(--stone-light); border-radius: 4px; overflow: hidden; }
+  .history-bar-fill { height: 100%; background: var(--sage); border-radius: 4px; transition: width 0.8s cubic-bezier(0.4,0,0.2,1); }
+  .history-bar-score { font-size: 12px; color: var(--ink-muted); font-weight: 500; width: 24px; text-align: right; }
+
+  /* ─── TOAST ─── */
+  .toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px);
+    background: var(--ink); color: var(--cream);
+    font-size: 14px; padding: 10px 20px; border-radius: 20px;
+    transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s;
+    opacity: 0; z-index: 999; pointer-events: none; white-space: nowrap;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+  /* ─── MOBILE ─── */
+  @media (max-width: 480px) {
+    nav { padding: 0 1rem; }
+    main { padding: 0 1rem 3rem; }
+    .start-grid { grid-template-columns: 1fr 1fr; }
+    .result-stats { grid-template-columns: 1fr 1fr 1fr; }
+    .profile-grid { grid-template-columns: 1fr 1fr; }
+    .hero h1 { font-size: 32px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">sama<span>char</span></div>
+  <div class="nav-actions">
+    <button class="nav-btn ghost" onclick="showScreen('leaderboard')">Leaderboard</button>
+    <button class="nav-btn ghost" onclick="showScreen('profile')">Profile</button>
+    <button class="nav-btn primary" onclick="showScreen('start')">Today's Quiz</button>
+  </div>
+</nav>
+
+<main>
+
+  <!-- HOME -->
+  <div id="home-screen" class="screen active">
+    <div class="hero">
+      <div class="hero-eyebrow">Daily · Current Affairs · Quiz</div>
+      <h1>Know the world,<br><em>ace the exam.</em></h1>
+      <p>Five fresh questions every morning, pulled from today's news. Built for UPSC, SSC, WBCS & Bank PO aspirants.</p>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <span class="hero-stat-num" id="home-streak">0</span>
+          <span class="hero-stat-label">Day streak</span>
+        </div>
+        <div class="hero-stat">
+          <span class="hero-stat-num" id="home-total">0</span>
+          <span class="hero-stat-label">Quizzes done</span>
+        </div>
+        <div class="hero-stat">
+          <span class="hero-stat-num" id="home-best">–</span>
+          <span class="hero-stat-label">Best score</span>
+        </div>
+      </div>
+      <button class="btn-big sage" onclick="showScreen('start')" style="max-width:300px; margin:0 auto; display:block;">
+        Start today's quiz →
+      </button>
+    </div>
+  </div>
+
+  <!-- START -->
+  <div id="start-screen" class="screen">
+    <div style="padding: 2rem 0 1rem;">
+      <div class="hero-eyebrow">Ready?</div>
+      <h2 style="font-family:'DM Serif Display',serif; font-size:30px; margin-bottom:6px;">Today's Quiz</h2>
+      <p style="font-size:14px; color:var(--ink-muted); font-weight:300; margin-bottom:1.5rem;">5 questions · 20 seconds each · Live news</p>
+    </div>
+
+    <div class="start-grid">
+      <div class="start-tile">
+        <div class="start-tile-icon">🔥</div>
+        <div class="start-tile-label">Streak</div>
+        <div class="start-tile-val" id="start-streak">0 days</div>
+      </div>
+      <div class="start-tile">
+        <div class="start-tile-icon">⭐</div>
+        <div class="start-tile-label">Best score</div>
+        <div class="start-tile-val" id="start-best">–</div>
+      </div>
+      <div class="start-tile">
+        <div class="start-tile-icon">📅</div>
+        <div class="start-tile-label">Quizzes</div>
+        <div class="start-tile-val" id="start-total">0 done</div>
+      </div>
+      <div class="start-tile">
+        <div class="start-tile-icon">⚡</div>
+        <div class="start-tile-label">Avg score</div>
+        <div class="start-tile-val" id="start-avg">–</div>
+      </div>
+    </div>
+
+    <div class="name-input-wrap">
+      <label for="player-name">Your name (for leaderboard)</label>
+      <input type="text" id="player-name" class="name-input" placeholder="e.g. Arjun S." maxlength="20">
+    </div>
+
+    <button class="btn-big sage" id="start-btn" onclick="beginQuiz()">Begin →</button>
+    <div style="height: 8px;"></div>
+    <button class="btn-big outline" onclick="showScreen('home')">← Back</button>
+  </div>
+
+  <!-- LOADING -->
+  <div id="loading-screen" class="screen">
+    <div class="loader-ring"></div>
+    <div class="loader-text" id="loader-msg">Fetching today's news…</div>
+  </div>
+
+  <!-- QUIZ -->
+  <div id="quiz-screen" class="screen">
+    <div class="quiz-header">
+      <div class="progress-dots" id="progress-dots"></div>
+      <div class="timer-wrap">
+        <div class="score-badge" id="live-score">0 / 5</div>
+        <div class="timer-circle" id="timer-circle">
+          <svg width="44" height="44" viewBox="0 0 44 44">
+            <circle class="timer-track" cx="22" cy="22" r="18"/>
+            <circle class="timer-fill" id="timer-arc" cx="22" cy="22" r="18"
+              stroke-dasharray="113" stroke-dashoffset="0"/>
+          </svg>
+          <div class="timer-num" id="timer-num">20</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="question-card" id="question-card">
+      <div class="q-source" id="q-source"></div>
+      <div class="q-text" id="q-text"></div>
+      <div class="options" id="options"></div>
+      <div class="explanation" id="explanation" style="display:none"></div>
+    </div>
+
+    <div class="next-wrap" id="next-wrap" style="display:none">
+      <button class="btn-big sage" id="next-btn" onclick="nextQuestion()">Next →</button>
+    </div>
+  </div>
+
+  <!-- RESULT -->
+  <div id="result-screen" class="screen">
+    <div class="result-hero">
+      <div class="result-score-ring" id="score-ring">
+        <svg width="120" height="120" viewBox="0 0 120 120">
+          <circle class="ring-track" cx="60" cy="60" r="52"/>
+          <circle class="ring-fill" id="ring-arc" cx="60" cy="60" r="52"
+            stroke-dasharray="327" stroke-dashoffset="327"/>
+        </svg>
+        <div class="ring-num">
+          <span id="res-score-big">0</span>
+          <span>out of 5</span>
+        </div>
+      </div>
+      <div class="result-title" id="res-title">Nice!</div>
+      <div class="result-sub" id="res-sub">Keep building that streak.</div>
+    </div>
+
+    <div class="result-stats">
+      <div class="result-stat">
+        <span class="result-stat-val" id="res-time">–</span>
+        <span class="result-stat-label">Avg time</span>
+      </div>
+      <div class="result-stat">
+        <span class="result-stat-val" id="res-streak">0</span>
+        <span class="result-stat-label">Streak 🔥</span>
+      </div>
+      <div class="result-stat">
+        <span class="result-stat-val" id="res-pts">0</span>
+        <span class="result-stat-label">Points</span>
+      </div>
+    </div>
+
+    <div class="review-list" id="review-list"></div>
+
+    <div class="result-btns">
+      <button class="btn-big sage" onclick="showScreen('leaderboard')">See leaderboard →</button>
+      <button class="btn-big outline" onclick="showScreen('home')">Back to home</button>
+    </div>
+  </div>
+
+  <!-- LEADERBOARD -->
+  <div id="leaderboard-screen" class="screen">
+    <div class="lb-header">
+      <h2>Leaderboard</h2>
+      <p>Top scorers · Updated after each quiz</p>
+    </div>
+    <div class="lb-tabs">
+      <button class="lb-tab active" onclick="switchLbTab('alltime', this)">All time</button>
+      <button class="lb-tab" onclick="switchLbTab('today', this)">Today</button>
+      <button class="lb-tab" onclick="switchLbTab('streak', this)">Streaks</button>
+    </div>
+    <div class="lb-list" id="lb-list"></div>
+    <div style="height:1.5rem;"></div>
+    <button class="btn-big outline" onclick="showScreen('home')">← Back</button>
+  </div>
+
+  <!-- PROFILE -->
+  <div id="profile-screen" class="screen">
+    <div class="profile-hero">
+      <div class="profile-avatar" id="prof-avatar">?</div>
+      <div class="profile-name" id="prof-name">Your Profile</div>
+      <div class="profile-since" id="prof-since">Start your first quiz to see stats</div>
+    </div>
+    <div class="profile-grid">
+      <div class="profile-stat">
+        <span class="profile-stat-val" id="prof-streak">0</span>
+        <span class="profile-stat-label">Streak 🔥</span>
+      </div>
+      <div class="profile-stat">
+        <span class="profile-stat-val" id="prof-best">–</span>
+        <span class="profile-stat-label">Best score</span>
+      </div>
+      <div class="profile-stat">
+        <span class="profile-stat-val" id="prof-total">0</span>
+        <span class="profile-stat-label">Quizzes</span>
+      </div>
+      <div class="profile-stat">
+        <span class="profile-stat-val" id="prof-avg">–</span>
+        <span class="profile-stat-label">Avg score</span>
+      </div>
+    </div>
+    <div class="history-section">
+      <h3>Recent history</h3>
+      <div class="history-bar-wrap" id="history-bars"></div>
+    </div>
+    <div style="height:1.5rem;"></div>
+    <button class="btn-big outline" onclick="showScreen('home')">← Back</button>
+  </div>
+
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ─── STATE ───
+const KEY = 'samachar_v2';
+let state = {
+  name: '', streak: 0, lastDate: null,
+  bestScore: 0, totalQuizzes: 0, totalPoints: 0,
+  history: [], leaderboard: []
+};
+
+let questions = [], currentQ = 0, score = 0, timerInterval = null;
+let timeLeft = 20, questionTimes = [], qStartTime = 0;
+const TIMER_MAX = 20;
+const CIRCUMFERENCE_TIMER = 2 * Math.PI * 18;
+const CIRCUMFERENCE_RING = 2 * Math.PI * 52;
+
+// ─── PERSISTENCE ───
+function loadState() {
+  try {
+    const raw = localStorage.getItem(KEY);
+    if (raw) state = { ...state, ...JSON.parse(raw) };
+  } catch(e) {}
+}
+function saveState() {
+  try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e) {}
+}
+
+// ─── SCREEN ROUTING ───
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => { s.classList.remove('active'); });
+  const el = document.getElementById(id + '-screen');
+  if (el) { el.classList.add('active'); }
+  if (id === 'home') refreshHome();
+  if (id === 'start') refreshStart();
+  if (id === 'leaderboard') renderLeaderboard('alltime');
+  if (id === 'profile') renderProfile();
+}
+
+// ─── HOME ───
+function refreshHome() {
+  document.getElementById('home-streak').textContent = state.streak;
+  document.getElementById('home-total').textContent = state.totalQuizzes;
+  document.getElementById('home-best').textContent = state.bestScore > 0 ? state.bestScore + '/5' : '–';
+}
+
+function refreshStart() {
+  document.getElementById('start-streak').textContent = state.streak + ' days';
+  document.getElementById('start-best').textContent = state.bestScore > 0 ? state.bestScore + '/5' : '–';
+  document.getElementById('start-total').textContent = state.totalQuizzes + ' done';
+  const avg = state.history.length > 0 ? (state.history.reduce((a, b) => a + b.score, 0) / state.history.length).toFixed(1) : '–';
+  document.getElementById('start-avg').textContent = avg !== '–' ? avg + '/5' : '–';
+  if (state.name) document.getElementById('player-name').value = state.name;
+}
+
+// ─── QUIZ FLOW ───
+async function beginQuiz() {
+  const nameEl = document.getElementById('player-name');
+  const name = nameEl.value.trim() || 'Anonymous';
+  state.name = name;
+  saveState();
+  document.getElementById('start-btn').disabled = true;
+
+  showScreen('loading');
+  const msgs = [
+    'Fetching today\'s news…',
+    'Reading top headlines…',
+    'Crafting your questions…',
+    'Almost ready…'
+  ];
+  let mi = 0;
+  const lt = document.getElementById('loader-msg');
+  const msgInterval = setInterval(() => { mi = (mi + 1) % msgs.length; lt.textContent = msgs[mi]; }, 1800);
+
+  try {
+    const today = new Date().toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1200,
+        tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+        system: `You are a current affairs quiz generator for Indian competitive exam aspirants (UPSC, SSC, WBCS, Bank PO). Search for today's top news and generate exactly 5 MCQs. Respond ONLY with a JSON array — no markdown, no backticks, no preamble. Format: [{"q":"question","opts":["A) opt","B) opt","C) opt","D) opt"],"ans":0,"exp":"brief explanation in 1-2 sentences","src":"Topic name"}] where ans is the 0-based correct option index.`,
+        messages: [{ role: 'user', content: `Today is ${today}. Search for top current affairs from India and worldwide. Generate 5 exam-relevant MCQ questions in the exact JSON format.` }]
+      })
+    });
+    clearInterval(msgInterval);
+    const data = await resp.json();
+    const text = data.content.filter(b => b.type === 'text').map(b => b.text).join('');
+    const clean = text.replace(/```json|```/g, '').trim();
+    questions = JSON.parse(clean).slice(0, 5);
+  } catch(e) {
+    clearInterval(msgInterval);
+    questions = fallbackQuestions();
+    showToast('Using practice questions today');
+  }
+
+  currentQ = 0; score = 0; questionTimes = [];
+  document.getElementById('start-btn').disabled = false;
+  buildProgressDots();
+  renderQuestion();
+  showScreen('quiz');
+}
+
+function buildProgressDots() {
+  const container = document.getElementById('progress-dots');
+  container.innerHTML = '';
+  for (let i = 0; i < 5; i++) {
+    const d = document.createElement('div');
+    d.className = 'pdot' + (i === 0 ? ' active' : '');
+    d.id = 'dot-' + i;
+    container.appendChild(d);
+  }
+}
+
+function updateDots() {
+  for (let i = 0; i < 5; i++) {
+    const d = document.getElementById('dot-' + i);
+    if (!d) continue;
+    d.className = 'pdot' + (i < currentQ ? ' done' : i === currentQ ? ' active' : '');
+  }
+}
+
+function renderQuestion() {
+  const q = questions[currentQ];
+  document.getElementById('q-source').textContent = q.src || '';
+  document.getElementById('q-text').textContent = q.q;
+  document.getElementById('explanation').style.display = 'none';
+  document.getElementById('next-wrap').style.display = 'none';
+  document.getElementById('live-score').textContent = score + ' / ' + currentQ;
+  updateDots();
+
+  const opts = document.getElementById('options');
+  opts.innerHTML = '';
+  const letters = ['A', 'B', 'C', 'D'];
+  q.opts.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    const label = opt.replace(/^[A-D]\)\s?/, '');
+    btn.innerHTML = `<span class="opt-letter">${letters[i]}</span>${label}`;
+    btn.onclick = () => selectAnswer(i, btn);
+    opts.appendChild(btn);
+  });
+
+  // Animate card
+  const card = document.getElementById('question-card');
+  card.style.animation = 'none';
+  void card.offsetWidth;
+  card.style.animation = 'fadeUp 0.4s cubic-bezier(0.4,0,0.2,1) both';
+
+  startTimer();
+  qStartTime = Date.now();
+}
+
+function startTimer() {
+  clearInterval(timerInterval);
+  timeLeft = TIMER_MAX;
+  updateTimerUI();
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    updateTimerUI();
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+      timeUp();
+    }
+  }, 1000);
+}
+
+function updateTimerUI() {
+  const num = document.getElementById('timer-num');
+  const arc = document.getElementById('timer-arc');
+  const circle = document.getElementById('timer-circle');
+  num.textContent = timeLeft;
+  const pct = timeLeft / TIMER_MAX;
+  arc.style.strokeDashoffset = CIRCUMFERENCE_TIMER * (1 - pct);
+  if (timeLeft <= 5) {
+    circle.classList.add('timer-urgent');
+  } else {
+    circle.classList.remove('timer-urgent');
+  }
+}
+
+function timeUp() {
+  const q = questions[currentQ];
+  const elapsed = (Date.now() - qStartTime) / 1000;
+  questionTimes.push(elapsed);
+  const allBtns = document.querySelectorAll('.opt-btn');
+  allBtns.forEach(b => b.disabled = true);
+  allBtns[q.ans].classList.add('correct');
+  const exp = document.getElementById('explanation');
+  exp.textContent = '⏰ Time up! ' + (q.exp || '');
+  exp.style.display = 'block';
+  document.getElementById('next-wrap').style.display = 'block';
+  document.getElementById('next-btn').textContent = currentQ < 4 ? 'Next →' : 'See results →';
+  showToast('Time up!');
+}
+
+function selectAnswer(idx, btn) {
+  clearInterval(timerInterval);
+  const q = questions[currentQ];
+  const elapsed = (Date.now() - qStartTime) / 1000;
+  questionTimes.push(Math.min(elapsed, TIMER_MAX));
+
+  const allBtns = document.querySelectorAll('.opt-btn');
+  allBtns.forEach(b => b.disabled = true);
+
+  if (idx === q.ans) {
+    btn.classList.add('correct');
+    score++;
+    showToast('Correct! +' + getPoints(elapsed) + ' pts');
+  } else {
+    btn.classList.add('wrong');
+    allBtns[q.ans].classList.add('correct');
+  }
+
+  document.getElementById('explanation').textContent = q.exp || '';
+  document.getElementById('explanation').style.display = 'block';
+  document.getElementById('next-wrap').style.display = 'block';
+  document.getElementById('next-btn').textContent = currentQ < 4 ? 'Next →' : 'See results →';
+  document.getElementById('live-score').textContent = score + ' / ' + (currentQ + 1);
+}
+
+function getPoints(timeUsed) {
+  const base = 100;
+  const bonus = Math.max(0, Math.round((TIMER_MAX - timeUsed) / TIMER_MAX * 50));
+  return base + bonus;
+}
+
+function nextQuestion() {
+  currentQ++;
+  if (currentQ >= questions.length) { showResults(); } else { renderQuestion(); }
+}
+
+function showResults() {
+  clearInterval(timerInterval);
+
+  // Compute points
+  let pts = 0;
+  questionTimes.forEach((t, i) => {
+    // we don't know per-question correctness here, use score approximation
+    pts += 0; // computed below
+  });
+  // Re-compute: score * avg_time_bonus
+  const avgTime = questionTimes.length ? questionTimes.reduce((a, b) => a + b, 0) / questionTimes.length : TIMER_MAX;
+  pts = score * Math.round(100 + Math.max(0, (TIMER_MAX - avgTime) / TIMER_MAX * 50));
+
+  // Update streak
+  const today = new Date().toDateString();
+  if (state.lastDate !== today) {
+    const yesterday = new Date(); yesterday.setDate(yesterday.getDate() - 1);
+    state.streak = (state.lastDate === yesterday.toDateString()) ? state.streak + 1 : 1;
+    state.lastDate = today;
+    state.totalQuizzes++;
+  }
+  if (score > state.bestScore) state.bestScore = score;
+  state.totalPoints = (state.totalPoints || 0) + pts;
+  state.history.unshift({ date: today, score, pts, avgTime: avgTime.toFixed(1) });
+  if (state.history.length > 30) state.history = state.history.slice(0, 30);
+
+  // Leaderboard entry
+  const entry = { name: state.name || 'Anonymous', score, pts, streak: state.streak, date: today };
+  const existing = state.leaderboard.findIndex(e => e.name === entry.name);
+  if (existing >= 0) {
+    if (score >= state.leaderboard[existing].score) state.leaderboard[existing] = entry;
+  } else {
+    state.leaderboard.push(entry);
+  }
+  state.leaderboard.sort((a, b) => b.pts - a.pts || b.score - a.score);
+  if (state.leaderboard.length > 50) state.leaderboard = state.leaderboard.slice(0, 50);
+
+  saveState();
+
+  // Render
+  document.getElementById('res-score-big').textContent = score;
+  document.getElementById('res-streak').textContent = state.streak;
+  document.getElementById('res-pts').textContent = pts;
+  document.getElementById('res-time').textContent = avgTime.toFixed(1) + 's';
+
+  const msgs = [
+    ['Keep practicing!', 'Every day gets you closer.'],
+    ['Getting there!', 'Review the explanations carefully.'],
+    ['Solid effort!', 'You\'re building real knowledge.'],
+    ['Great work!', 'Almost perfect — keep this streak.'],
+    ['Perfect score!', 'Exceptional. See you tomorrow.']
+  ];
+  const tier = score === 0 ? 0 : score <= 2 ? 1 : score <= 3 ? 2 : score <= 4 ? 3 : 4;
+  document.getElementById('res-title').textContent = msgs[tier][0];
+  document.getElementById('res-sub').textContent = msgs[tier][1];
+
+  // Animate ring
+  showScreen('result');
+  setTimeout(() => {
+    const arc = document.getElementById('ring-arc');
+    const offset = CIRCUMFERENCE_RING * (1 - score / 5);
+    arc.style.strokeDashoffset = offset;
+  }, 100);
+
+  // Review
+  const rl = document.getElementById('review-list');
+  rl.innerHTML = '';
+  // We track answers now via questions array (ans index), but we didn't store per-q result
+  // Show all questions with correct answer highlighted
+  questions.forEach((q, i) => {
+    const div = document.createElement('div');
+    div.className = 'review-item';
+    div.innerHTML = `
+      <div class="review-q">${q.q}</div>
+      <div class="review-ans right">✓ ${q.opts[q.ans].replace(/^[A-D]\)\s?/, '')}</div>
+    `;
+    rl.appendChild(div);
+  });
+}
+
+// ─── LEADERBOARD ───
+let currentLbTab = 'alltime';
+
+function switchLbTab(tab, el) {
+  currentLbTab = tab;
+  document.querySelectorAll('.lb-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  renderLeaderboard(tab);
+}
+
+function renderLeaderboard(tab) {
+  const list = document.getElementById('lb-list');
+  list.innerHTML = '';
+
+  let entries = [...state.leaderboard];
+
+  if (tab === 'today') {
+    const today = new Date().toDateString();
+    entries = entries.filter(e => e.date === today);
+  } else if (tab === 'streak') {
+    entries.sort((a, b) => b.streak - a.streak);
+  }
+
+  if (entries.length === 0) {
+    list.innerHTML = '<div class="lb-empty">No entries yet. Complete a quiz to appear here!</div>';
+    return;
+  }
+
+  const rankSymbols = ['🥇', '🥈', '🥉'];
+  entries.slice(0, 20).forEach((e, i) => {
+    const isMe = e.name === state.name;
+    const initials = e.name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2) || '?';
+    const row = document.createElement('div');
+    row.className = 'lb-row' + (isMe ? ' me' : '');
+    row.style.animationDelay = (i * 0.04) + 's';
+    const rankCls = i === 0 ? 'gold' : i === 1 ? 'silver' : i === 2 ? 'bronze' : '';
+    row.innerHTML = `
+      <div class="lb-rank ${rankCls}">${i < 3 ? rankSymbols[i] : i + 1}</div>
+      <div class="lb-avatar">${initials}</div>
+      <div class="lb-info">
+        <div class="lb-name">${e.name}${isMe ? ' (you)' : ''}</div>
+        <div class="lb-meta">${tab === 'streak' ? e.streak + ' day streak' : e.score + '/5 · ' + (e.date || '')}</div>
+      </div>
+      <div class="lb-score-col">
+        <div class="lb-pts">${tab === 'streak' ? e.streak : e.pts}</div>
+        <div class="lb-streak">${tab !== 'streak' ? '🔥 ' + e.streak : 'days'}</div>
+      </div>
+    `;
+    list.appendChild(row);
+  });
+}
+
+// ─── PROFILE ───
+function renderProfile() {
+  const initials = state.name ? state.name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2) : '?';
+  document.getElementById('prof-avatar').textContent = initials;
+  document.getElementById('prof-name').textContent = state.name || 'Anonymous';
+  document.getElementById('prof-since').textContent = state.history.length > 0 ? 'Playing since ' + state.history[state.history.length - 1].date : 'No quizzes yet';
+  document.getElementById('prof-streak').textContent = state.streak;
+  document.getElementById('prof-best').textContent = state.bestScore > 0 ? state.bestScore + '/5' : '–';
+  document.getElementById('prof-total').textContent = state.totalQuizzes;
+  const avg = state.history.length > 0 ? (state.history.reduce((a, b) => a + b.score, 0) / state.history.length).toFixed(1) : '–';
+  document.getElementById('prof-avg').textContent = avg !== '–' ? avg + '/5' : '–';
+
+  const bars = document.getElementById('history-bars');
+  bars.innerHTML = '';
+  const recent = state.history.slice(0, 7).reverse();
+  recent.forEach(h => {
+    const d = new Date(h.date);
+    const label = d.toLocaleDateString('en-IN', { month: 'short', day: 'numeric' });
+    const div = document.createElement('div');
+    div.className = 'history-bar-row';
+    div.innerHTML = `
+      <div class="history-bar-label">${label}</div>
+      <div class="history-bar-track"><div class="history-bar-fill" style="width:0%" data-pct="${h.score / 5 * 100}"></div></div>
+      <div class="history-bar-score">${h.score}/5</div>
+    `;
+    bars.appendChild(div);
+  });
+  setTimeout(() => {
+    document.querySelectorAll('.history-bar-fill').forEach(el => {
+      el.style.width = el.dataset.pct + '%';
+    });
+  }, 100);
+}
+
+// ─── TOAST ───
+let toastTimeout;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimeout);
+  toastTimeout = setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+// ─── FALLBACK ───
+function fallbackQuestions() {
+  return [
+    { q: "India's first underwater metro tunnel runs beneath which river?", opts: ["A) Yamuna", "B) Ganga", "C) Hooghly", "D) Brahmaputra"], ans: 2, exp: "The Kolkata Metro's Howrah Maidan–Esplanade section passes under the Hooghly river.", src: "Infrastructure" },
+    { q: "Which body sets India's repo rate?", opts: ["A) Finance Ministry", "B) SEBI", "C) RBI Monetary Policy Committee", "D) NITI Aayog"], ans: 2, exp: "The RBI's Monetary Policy Committee (MPC) decides the repo rate every two months.", src: "Economy" },
+    { q: "Operation Sindoor (2025) was conducted by India against targets in which country?", opts: ["A) China", "B) Bangladesh", "C) Pakistan", "D) Myanmar"], ans: 2, exp: "Operation Sindoor was a precision military operation by Indian armed forces against terror infrastructure in Pakistan.", src: "Defence" },
+    { q: "The BRICS grouping originally comprised Brazil, Russia, India, China and which fifth nation?", opts: ["A) Saudi Arabia", "B) South Africa", "C) UAE", "D) Egypt"], ans: 1, exp: "South Africa joined BRICS in 2010, making it the fifth member of the original group.", src: "International" },
+    { q: "PM WANI scheme is related to which sector in India?", opts: ["A) Agriculture", "B) Public Wi-Fi access", "C) Women entrepreneurship", "D) Renewable energy"], ans: 1, exp: "PM-WANI (PM Wi-Fi Access Network Interface) aims to provide public Wi-Fi hotspots across India.", src: "Technology & Policy" }
+  ];
+}
+
+// ─── INIT ───
+loadState();
+refreshHome();
+</script>
+</body>
+</html>
